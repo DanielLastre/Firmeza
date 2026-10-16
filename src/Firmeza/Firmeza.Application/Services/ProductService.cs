@@ -14,44 +14,44 @@ public class ProductService : IProductService
         _productRepository = productRepository;
     }
 
-    public async Task<IEnumerable<ProductResponseDto>> GetAllAsync()
+    public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var products = await _productRepository.GetAllAsync();
+        var products = await _productRepository.GetAllAsync(cancellationToken);
         return products.Select(p => MapToResponseDto(p));
     }
 
-    public async Task<IEnumerable<ProductResponseDto>> GetAllPagedAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<ProductResponseDto>> GetAllPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
-        var products = await _productRepository.GetAllPagedAsync(pageNumber, pageSize);
+        var products = await _productRepository.GetAllPagedAsync(pageNumber, pageSize, cancellationToken);
         return products.Select(p => MapToResponseDto(p));
     }
 
-    public async Task<ProductResponseDto?> GetByIdAsync(Guid id)
+    public async Task<ProductResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdAsync(id, cancellationToken);
         return product == null ? null : MapToResponseDto(product);
     }
 
-    public async Task<ProductResponseDto> CreateAsync(CreateProductDto dto)
+    public async Task<ProductResponseDto> CreateAsync(CreateProductDto dto, CancellationToken cancellationToken = default)
     {
         var product = new Product(dto.Name, dto.Brand, dto.Price, dto.Description, dto.Stock);
-        await _productRepository.AddAsync(product);
+        await _productRepository.AddAsync(product, cancellationToken);
         return MapToResponseDto(product);
     }
 
-    public async Task<ProductResponseDto> UpdateAsync(Guid id, UpdateProductDto dto)
+    public async Task<ProductResponseDto> UpdateAsync(Guid id, UpdateProductDto dto, CancellationToken cancellationToken = default)
     {
-        var existingProduct = await _productRepository.GetByIdAsync(id);
+        var existingProduct = await _productRepository.GetByIdAsync(id, cancellationToken);
         if (existingProduct == null)
             throw new InvalidOperationException("Producto no encontrado.");
 
-        await _productRepository.UpdateAsync(existingProduct);
+        await _productRepository.UpdateAsync(existingProduct, cancellationToken);
         return MapToResponseDto(existingProduct);
     }
 
-    public async Task DeleteLogicalAsync(Guid id)
+    public async Task DeleteLogicalAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await _productRepository.DeleteLogicalAsync(id);
+        await _productRepository.DeleteLogicalAsync(id, cancellationToken);
     }
 
     private static ProductResponseDto MapToResponseDto(Product product)

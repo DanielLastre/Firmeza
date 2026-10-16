@@ -14,44 +14,44 @@ public class SaleService : ISaleService
         _saleRepository = saleRepository;
     }
 
-    public async Task<IEnumerable<SaleResponseDto>> GetAllAsync()
+    public async Task<IEnumerable<SaleResponseDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var sales = await _saleRepository.GetAllAsync();
+        var sales = await _saleRepository.GetAllAsync(cancellationToken);
         return sales.Select(s => MapToResponseDto(s));
     }
 
-    public async Task<IEnumerable<SaleResponseDto>> GetAllPagedAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<SaleResponseDto>> GetAllPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
-        var sales = await _saleRepository.GetAllPagedAsync(pageNumber, pageSize);
+        var sales = await _saleRepository.GetAllPagedAsync(pageNumber, pageSize, cancellationToken);
         return sales.Select(s => MapToResponseDto(s));
     }
 
-    public async Task<SaleResponseDto?> GetByIdAsync(Guid id)
+    public async Task<SaleResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var sale = await _saleRepository.GetByIdAsync(id);
+        var sale = await _saleRepository.GetByIdAsync(id, cancellationToken);
         return sale == null ? null : MapToResponseDto(sale);
     }
 
-    public async Task<SaleResponseDto> CreateAsync(CreateSaleDto dto)
+    public async Task<SaleResponseDto> CreateAsync(CreateSaleDto dto, CancellationToken cancellationToken = default)
     {
         var sale = new Sale(DateTime.UtcNow, dto.ClientId, 0);
-        await _saleRepository.AddAsync(sale);
+        await _saleRepository.AddAsync(sale, cancellationToken);
         return MapToResponseDto(sale);
     }
 
-    public async Task<SaleResponseDto> UpdateAsync(Guid id, UpdateSaleDto dto)
+    public async Task<SaleResponseDto> UpdateAsync(Guid id, UpdateSaleDto dto, CancellationToken cancellationToken = default)
     {
-        var existingSale = await _saleRepository.GetByIdAsync(id);
+        var existingSale = await _saleRepository.GetByIdAsync(id, cancellationToken);
         if (existingSale == null)
             throw new InvalidOperationException("Venta no encontrada.");
 
-        await _saleRepository.UpdateAsync(existingSale);
+        await _saleRepository.UpdateAsync(existingSale, cancellationToken);
         return MapToResponseDto(existingSale);
     }
 
-    public async Task DeleteLogicalAsync(Guid id)
+    public async Task DeleteLogicalAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await _saleRepository.DeleteLogicalAsync(id);
+        await _saleRepository.DeleteLogicalAsync(id, cancellationToken);
     }
 
     private static SaleResponseDto MapToResponseDto(Sale sale)
